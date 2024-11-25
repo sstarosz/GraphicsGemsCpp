@@ -1,9 +1,13 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.20)
 
 project(GraphicsGems)
 
+find_package(glfw3 CONFIG REQUIRED)
+find_package(imgui CONFIG REQUIRED)
+
+
 if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-	set(CMAKE_CXX_STANDARD 11)
+	#set(CMAKE_CXX_STANDARD 11)
 	add_definitions(-Werror)
 endif()
 if(CMAKE_COMPILER_IS_GNUCC)
@@ -11,14 +15,14 @@ if(CMAKE_COMPILER_IS_GNUCC)
 endif()
 
 if(MSVC)
-	add_definitions(-D_CRT_SECURE_NO_WARNINGS=1)
+	#add_definitions(-D_CRT_SECURE_NO_WARNINGS=1) TODO: Fix this
 endif()
 
 if(APPLE)
     add_definitions(-DAPPLE)
 endif()
 
-set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+#set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 include_directories(.)
 
