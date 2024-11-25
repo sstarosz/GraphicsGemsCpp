@@ -1,13 +1,13 @@
 /**** BallMath.c - Essential routines for ArcBall.  ****/
 #include <math.h>
-#include "BallMath.h"
-#include "BallAux.h"
+#include "BallMath.hpp"
+#include "BallAux.hpp"
 
 /* Convert window coordinates to sphere coordinates. */
 HVect MouseOnSphere(HVect mouse, HVect ballCenter, float ballRadius)
 {
     HVect ballMouse;
-    register float mag;
+    float mag;
     ballMouse.x = (mouse.x - ballCenter.x) / ballRadius;
     ballMouse.y = (mouse.y - ballCenter.y) / ballRadius;
     mag = ballMouse.x*ballMouse.x + ballMouse.y*ballMouse.y;
@@ -53,7 +53,7 @@ void Qt_ToBallPoints(Quat q, HVect *arcFrom, HVect *arcTo)
 HVect ConstrainToAxis(HVect loose, HVect axis)
 {
     HVect onPlane;
-    register float norm;
+    float norm;
     onPlane = V3_Sub(loose, V3_Scale(axis, V3_Dot(axis, loose)));
     norm = V3_Norm(onPlane);
     if (norm > 0.f) {
@@ -72,8 +72,8 @@ HVect ConstrainToAxis(HVect loose, HVect axis)
 int NearestConstraintAxis(HVect loose, HVect *axes, int nAxes)
 {
     HVect onPlane;
-    register float max, dot;
-    register int i, nearest;
+    float max, dot;
+    int i, nearest;
     max = -1; nearest = 0;
     for (i=0; i<nAxes; i++) {
 	onPlane = ConstrainToAxis(loose, axes[i]);

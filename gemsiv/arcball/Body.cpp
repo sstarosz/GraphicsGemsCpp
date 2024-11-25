@@ -1,7 +1,8 @@
 /***** Body.c *****/
-#include "../../fakeirisgl.h"
-#include "Body.h"
+//#include "../../fakeirisgl.hpp"
+#include "Body.hpp"
 
+#include <GLFW/glfw3.h>
 
 enum QuatPart {X, Y, Z, W};
 int bodyNPoints = 8;
@@ -50,10 +51,10 @@ short theFaceColors[][3] = {
 void drawbody(Matrix Rot)
 {
     float bodyScale = 1.f/theBodyRadius;
-    register int i, j, k, n;
+    int i, j, k, n;
 
-    pushmatrix();
-    scale(bodyScale, bodyScale, bodyScale);
+    glPushMatrix();
+    glScalef(bodyScale, bodyScale, bodyScale);
     for (j=0; j<bodyNFaces; j++) {
 	float dot = Rot[X][Z]*theFaceNormals[j][X]
 		    +Rot[Y][Z]*theFaceNormals[j][Y]
@@ -65,14 +66,15 @@ void drawbody(Matrix Rot)
 	    shadedColor[1] = (short)(dot*theFaceColors[j][1]);
 	    shadedColor[2] = (short)(dot*theFaceColors[j][2]);
 	    n = theFaceVertices[j][0];
-	    RGBcolor(shadedColor[0], shadedColor[1], shadedColor[2]);
-	    bgnpolygon();
-	    for (k=1; k<=n; k++) {
-		i = theFaceVertices[j][k];
-		v4f(thePoints[i]);
+	    glColor3f(shadedColor[0], shadedColor[1], shadedColor[2]);
+	    glBegin(GL_POLYGON);
+	    for (k=1; k<=n; k++) 
+        {
+            i = theFaceVertices[j][k];
+            glVertex4fv(thePoints[i]);
 	    }
-	    endpolygon();
+	    glEnd();
 	}
     }
-    popmatrix();
+    glPopMatrix();
 }

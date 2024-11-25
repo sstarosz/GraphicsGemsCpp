@@ -4,7 +4,12 @@
     "version": "0.0.1",
     "dependencies": [
       {
-        "name": "imgui"
+        "name": "imgui",
+        "features": [
+          "opengl2-binding",
+          "opengl3-binding",
+          "glfw-binding"
+        ]
       },
       {
         "name": "glfw3"

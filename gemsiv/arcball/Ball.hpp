@@ -1,7 +1,7 @@
 /***** Ball.h *****/
 #ifndef _H_Ball
 #define _H_Ball
-#include "BallAux.h"
+#include "BallAux.hpp"
 
 typedef enum AxisSet{NoAxes, CameraAxes, BodyAxes, OtherAxes, NSets} AxisSet;
 typedef float *ConstraintSet;

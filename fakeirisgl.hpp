@@ -41,7 +41,8 @@ void scale();
 void ortho(float a, float b, float c, float d, float e, float f);
 void ortho2(float, float, float, float);
 void RGBcolor(int r, int g, int b);
-void circ();
+void circ(float cx, float cy, float r);
+
 void v2d(double*);
 void v2i(int*);
 void v3f();
