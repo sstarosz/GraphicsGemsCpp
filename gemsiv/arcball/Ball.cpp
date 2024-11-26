@@ -10,11 +10,11 @@
 
 #define LG_NSEGS 4
 #define NSEGS (1<<LG_NSEGS)
-#define RIMCOLOR()    RGBcolor(255, 255, 255)
-#define FARCOLOR()    RGBcolor(195, 127, 31)
-#define NEARCOLOR()   RGBcolor(255, 255, 63)
-#define DRAGCOLOR()   RGBcolor(127, 255, 255)
-#define RESCOLOR()    RGBcolor(195, 31, 31)
+#define RIMCOLOR()    glColor3ub(255, 255, 255)
+#define FARCOLOR()    glColor3ub(195, 127, 31)
+#define NEARCOLOR()   glColor3ub(255, 255, 63)
+#define DRAGCOLOR()   glColor3ub(127, 255, 255)
+#define RESCOLOR()    glColor3ub(195, 31, 31)
 
 HMatrix mId = {{1,0,0,0},{0,1,0,0},{0,0,1,0},{0,0,0,1}};
 float otherAxis[][4] = {{-0.48f, 0.80f, 0.36f, 1.f}};
@@ -93,8 +93,10 @@ void Ball_Update(BallData *ball)
 /* Return rotation matrix defined by controller use. */
 void Ball_Value(BallData *ball, HMatrix mNow)
 {
-    int i;
-    for (i=15; i>=0; i--) ((float *)mNow)[i] = ((float *)ball->mNow)[i];
+    for (int i = 15; i >= 0; i--)
+    {
+     ((float *)mNow)[i] = ((float *)ball->mNow)[i];
+    }   
 }
 
 
@@ -194,12 +196,18 @@ void Ball_DrawConstraints(BallData *ball)
 void Ball_DrawDragArc(BallData *ball)
 {
     DRAGCOLOR();
-    if (ball->dragging) DrawAnyArc(ball->vFrom, ball->vTo);
+    if (ball->dragging)
+    {
+        DrawAnyArc(ball->vFrom, ball->vTo);
+    }
 }
 
 /* Draw arc for result of all drags. */
 void Ball_DrawResultArc(BallData *ball)
 {
     RESCOLOR();
-    if (ball->showResult) DrawAnyArc(ball->vrFrom, ball->vrTo);
+    if (ball->showResult)
+    {
+        DrawAnyArc(ball->vrFrom, ball->vrTo);
+    }
 }

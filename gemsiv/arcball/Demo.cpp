@@ -23,12 +23,24 @@ using Device = int;
 
 /* ^^^ End of Temporary workarounds ^^^*/
 
-typedef struct {long x, y;} Place;
+typedef struct {double x, y;} Place;
+typedef struct {int x, y;} IPoint;
 
 
 #define RADIUS	  (0.75)
 #define CNTRLDN	  1
 #define SHIFTDN	  2
+
+long int gid = 0;
+short active = 0;
+Device dev = 0;
+short val = 0;
+IPoint winsize = {0, 0};
+IPoint winorig = {0, 0};
+Place mouseNow = {0, 0};
+int keysDown = 0;
+HVect vNow = {0, 0, 0, 0};
+BallData ball;
 
 
 // GLFW error callback
@@ -60,20 +72,79 @@ void scene_Draw(BallData *ball)
 }
 
 
+void handleUserInput(GLFWwindow* window)
+{
+	if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+	{
+		glfwSetWindowShouldClose(window, GLFW_TRUE);
+	}
+
+	
+	if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+	{
+		glfwSetWindowShouldClose(window, GLFW_TRUE);
+	}
+
+	//Left mouse button
+	if(glfwGetKey(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
+	{
+		Ball_BeginDrag(&ball);
+	}
+	else
+	{
+		Ball_EndDrag(&ball);
+	}
+
+	//Control key
+	if(glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_RIGHT_CONTROL) == GLFW_PRESS)
+	{
+		keysDown = (keysDown & ~CNTRLDN) | CNTRLDN;
+	}
+	else
+	{
+		keysDown = keysDown & ~CNTRLDN;
+	}
+
+	glfwGetWindowPos(window, &winorig.x, &winorig.y);
+	glfwGetWindowSize(window, &winsize.x, &winsize.y);
+	glfwGetCursorPos(window, &mouseNow.x, &mouseNow.y);
+
+	Ball_Mouse(&ball, vNow);
+}
+
+void updateScene(BallData* ball)
+{
+	Ball_Update(ball);
+}
+
+void drawScene(GLFWwindow* window, BallData* ball)
+{
+	ImGui_ImplOpenGL2_NewFrame();
+	ImGui_ImplGlfw_NewFrame();
+
+	ImGui::NewFrame();
+	{
+		ImGui::Begin("Arcball Demo");
+		
+		ImGui::End();
+	}
+
+	ImGui::Render();
+
+	int display_w, display_h;
+	glfwGetFramebufferSize(window, &display_w, &display_h);
+	glViewport(0, 0, display_w, display_h);
+	glClearColor(0.45f, 0.55f, 0.60f, 1.00f);
+	glClear(GL_COLOR_BUFFER_BIT);
+
+	scene_Draw(ball);
+	ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
+}
+
 
 
 int main(void)
 {
-    long int gid;
-    short active;    /* TRUE if window is attached */
-    Device dev;
-    short val;
-    Place winsize, winorig;
-    Place mouseNow;
-    int keysDown = 0;
-    HVect vNow;
-    BallData ball;
-
 
 	glfwSetErrorCallback(glfw_error_callback);
 
@@ -82,7 +153,9 @@ int main(void)
 		return -1;
 	}
 
-	GLFWwindow* window = glfwCreateWindow(1280, 720, "Arcball Demo", NULL, NULL);
+	glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_TRUE);
+
+	GLFWwindow* window = glfwCreateWindow(640, 640, "Arcball Demo", NULL, NULL);
 	if(!window)
 	{
 		glfwTerminate();
@@ -103,49 +176,34 @@ int main(void)
 	ImGui_ImplGlfw_InitForOpenGL(window, true);
 	ImGui_ImplOpenGL2_Init();
 
+	//
+	glOrtho(-1.f, 1.f, -1.f, 1.f, 0.001f, 100000.f);
+	glTranslatef(0.f, 0.f, -3.f);
+
+	//Initialize the ball
+	Ball_Init(&ball);
+	Ball_Place(&ball, qOne, RADIUS);
+
 	while(!glfwWindowShouldClose(window))
 	{
 		glfwPollEvents();
 
-		if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-		{
-			glfwSetWindowShouldClose(window, GLFW_TRUE);
-		}
-
-		if(glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
-		{
-			keysDown |= CNTRLDN;
-		}
-		else
-		{
-			keysDown &= ~CNTRLDN;
-		}
-
-		ImGui_ImplOpenGL2_NewFrame();
-		ImGui_ImplGlfw_NewFrame();
-
-		ImGui::NewFrame();
-		{
-			ImGui::Begin("Arcball Demo");
-
-			ImGui::Text("Hello, world!");
-
-			ImGui::End();
-		}
-
-		ImGui::Render();
-
-		int display_w, display_h;
-		glfwGetFramebufferSize(window, &display_w, &display_h);
-		glViewport(0, 0, display_w, display_h);
-		glClearColor(0.45f, 0.55f, 0.60f, 1.00f);
-		glClear(GL_COLOR_BUFFER_BIT);
-
-		ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
+		handleUserInput(window);
+		updateScene(&ball);
+		drawScene(window, &ball);
 
 		glfwSwapBuffers(window);
 	}
 
+	ImGui_ImplOpenGL2_Shutdown();
+	ImGui_ImplGlfw_Shutdown();
+	ImGui::DestroyContext();
+
+	glfwDestroyWindow(window);
+	glfwTerminate();
+
+	return 0;
+}
 
 /*
 
@@ -227,14 +285,4 @@ int main(void)
     // NOT REACHED
 
 	*/
-
-	ImGui_ImplOpenGL2_Shutdown();
-	ImGui_ImplGlfw_Shutdown();
-	ImGui::DestroyContext();
-
-	glfwDestroyWindow(window);
-	glfwTerminate();
-
-	return 0;
-}
 
