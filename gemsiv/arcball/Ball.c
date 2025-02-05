@@ -3,10 +3,9 @@
 #ifdef _WIN32
 #include <windows.h>
 #endif
-#include "Ball.hpp"
-#include "BallMath.hpp"
-#include "../../fakeirisgl.hpp"
-#include <GLFW/glfw3.h>
+#include "Ball.h"
+#include "BallMath.h"
+#include "../../fakeirisgl.h"
 
 #define LG_NSEGS 4
 #define NSEGS (1<<LG_NSEGS)
@@ -119,16 +118,16 @@ void Ball_EndDrag(BallData *ball)
 void Ball_Draw(BallData *ball)
 {
     float r = ball->radius;
-    glPushMatrix();
-    glLoadMatrixf((float *)mId);
-    glOrtho(-1.0, 1.0, -1.0, 1.0, -1.0, 1.0); 
+    pushmatrix();
+    loadmatrix(mId);
+    ortho2(-1.0, 1.0, -1.0, 1.0);
     RIMCOLOR();
-    glScalef(r, r, r);
+    scale(r, r, r);
     circ(0.0, 0.0, 1.0);
     Ball_DrawResultArc(ball);
     Ball_DrawConstraints(ball);
     Ball_DrawDragArc(ball);
-    glPopMatrix();
+    popmatrix();
 }
 
 /* Draw an arc defined by its ends. */
@@ -144,12 +143,10 @@ void DrawAnyArc(HVect vFrom, HVect vTo)
     for (i=2; i<NSEGS; i++) {
 	pts[i] = V3_Sub(V3_Scale(pts[i-1], dot), pts[i-2]);
     }
-    glBegin(GL_LINE_STRIP);
+    bgnline();
     for (i=0; i<=NSEGS; i++)
-    {
-	    glVertex3fv((float *)&pts[i]);
-    }
-    glEnd();
+	v3f((float *)&pts[i]);
+    endline();
 }
 
 /* Draw the arc of a semi-circle defined by its axis. */

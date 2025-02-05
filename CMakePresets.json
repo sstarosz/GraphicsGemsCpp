@@ -2,10 +2,16 @@
     "version": 8,
     "configurePresets": [
         {
-            "name": "x64-MSVC-Debug",
-            "displayName": "Visual Studio Professional 2022 Release - amd64",
-            "description": "Using compilers for Visual Studio 17 2022 (x64 architecture)",
-            "generator": "Ninja",
+            "name": "base-configure",
+            "hidden": true,
+            "generator": "Ninja Multi-Config",
+            "binaryDir": "${sourceDir}/out/build/${presetName}",
+            "installDir": "${sourceDir}/out/install/${presetName}",
+            "toolchainFile": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+        },
+        {
+            "name": "x64-windows-msvc",
+            "inherits": "base-configure",
             "architecture": {
                 "value": "x64",
                 "strategy": "external"
@@ -14,21 +20,30 @@
                 "value": "host=x64",
                 "strategy": "external"
             },
-            "binaryDir": "${sourceDir}/out/build/${presetName}",
-            "installDir": "${sourceDir}/out/install/${presetName}",
             "cacheVariables": {
                 "CMAKE_C_COMPILER": "cl.exe",
                 "CMAKE_CXX_COMPILER": "cl.exe"
-            },
-            "toolchainFile": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+            }
         }
     ],
     "buildPresets": [
         {
-            "name": "x64-MSVC-Debug-debug",
-            "displayName": "Visual Studio Professional 2022 Release - amd64 - Debug",
-            "configurePreset": "x64-MSVC-Debug",
+            "name": "base-build",
+            "jobs": 8,
+            "hidden": true,
+            "verbose": true  
+        },
+        {
+            "name": "x64-windows-msvc-debug",
+            "configurePreset": "x64-windows-msvc",
+            "inherits": "base-build",
             "configuration": "Debug"
+        },
+        {
+            "name": "x64-windows-msvc-release",
+            "configurePreset": "x64-windows-msvc",
+            "inherits": "base-build",
+            "configuration": "Release"
         }
     ]
 }
