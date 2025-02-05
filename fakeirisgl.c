@@ -1,32 +1,12 @@
-#include "fakeirisgl.hpp"
-
-#include "GLFW/glfw3.h"
-#include <cmath>
+#include "fakeirisgl.h"
 
 void pushmatrix() {}
 void popmatrix() {}
 void loadmatrix() {}
 void scale() {}
 void ortho2(float a, float b, float c, float d) {}
-
-void RGBcolor(int r, int g, int b) 
-{
-    glColor3ub(r, g, b);
-}
-
-void circ(float cx, float cy, float r) 
-{
-    glBegin(GL_LINE_LOOP);
-    for (int i = 0; i < 360; i++)
-    {
-        float degInRad = i * 3.14159 / 180;
-        glVertex2f(cx + std::cos(degInRad) * r, cy + std::sin(degInRad) * r);
-    }
-    glEnd();
-} 
-
-
-
+void RGBcolor(int r, int g, int b) {}
+void circ() {}
 void v3f() {}
 void endline() {}
 void bgnpolygon() {}
